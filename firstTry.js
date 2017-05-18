@@ -67,7 +67,7 @@
                         }
                         break;
                 }
-            }else if(typePa == 'object')
+            }else if(typePa == 'object')   //传进来document.getElementById或者getElementsByClassName...
             {
                 if(para.length != undefined)
                 {
@@ -78,6 +78,16 @@
                 }else{
 
                     arr.push(para);
+                }
+            }
+            for (var j=0;j<arr.length;j++ )     //除去Jq 中相同的js对象
+            {
+                for (var i=arr.length-1;i>j;i-- )
+                {
+                    if ( arr[i] == arr[j] )
+                    {
+                        arr.splice(i , 1);
+                    }
                 }
             }
             for(var i = 0;i<arr.length;i++)
@@ -412,6 +422,155 @@
                 return this[0].offsetHeight;
             }
         },
+
+        //hasClass
+        hasClass : function( prop ){
+            var reg = new RegExp("(^|\\s)"+prop+"(\\s|$)");
+            for(var i = 0;i<this.length;i++)
+            {
+                if(reg.test(this[i].className)){
+                    return true ;
+                }
+            }
+            return false;
+        },
+
+        //children   一级子元素匹配
+        children : function( prop ){
+            var arr = [];
+            if(!prop){
+                this.each(function(){
+                    for(var i = 0;i<this.children.length;i++)
+                    {
+                        arr.push(this.children[i]);
+                    }
+                });
+            }
+            else{
+                var $Prop = $(prop);
+                for(var i = 0;i<$Prop.length;i++){
+                    for(var j=0;j<this.length;j++)
+                    {
+                        if($Prop[i].parentNode == this[j]){
+                            arr.push($Prop[i]);
+                            break;
+                        }
+                    }
+                }
+            }
+            return $(arr);
+        },
+
+        //parent   一级父元素匹配
+        parent : function( prop ){
+            var arr =[];
+            if(!prop){
+                this.each(function(){
+                    arr.push(this.parentNode);
+                });
+            }
+            else{
+                var $Prop = $(prop);
+                for(var i = 0;i<$Prop.length;i++){
+                    for(var j=0;j<this.length;j++)
+                    {
+                        if(this[j].parentNode == $Prop[i]){
+                            arr.push($Prop[i]);
+                            break;
+                        }
+                    }
+                }
+            }
+            return $(arr);
+        },
+
+        //parents   祖元素匹配
+        parents : function(prop){
+            var arr = [];
+            this.each(function(){
+                var oThis = this;
+                while(oThis != document.documentElement){
+                    oThis = oThis.parentNode;
+                    arr.push(oThis);
+                }
+            });
+            if(!prop){
+                return $(arr);
+            }
+            else{
+                var newArr = [];
+                var $Prop = $(prop);
+                for(var i = 0;i<arr.length;i++){
+                    for(var j = 0;j<$Prop.length;j++)
+                    {
+                        if(arr[i] == $Prop[j]){
+                            newArr.push(arr[i]);
+                            break;
+                        }
+                    }
+                }
+                return $(newArr);
+            }
+        },
+
+        //find   查找所有子元素，必须带参
+        find : function(prop){
+            if(prop){
+                var arr = [];
+                var $Prop = $(prop);
+                var This = this;
+                $Prop.each(function(){
+                    var newArr = [];
+                    var oThis = this;
+                    while(oThis != document.documentElement){
+                        oThis = oThis.parentNode;
+                        newArr.push(oThis);
+                    }
+                    for(var i = 0;i<newArr.length;i++){
+                        for(var j = 0;j<This.length;j++)
+                        {
+                            if(newArr[i] == This[j]){
+                                arr.push(this);
+                            }
+                        }
+                    }
+                });
+                return $(arr);
+            }
+            return null;
+        },
+
+        //siblings  同级其他元素
+        siblings : function(prop){
+            var arr = [];
+            this.each(function(){
+                var sil = this.parentNode.children;
+                var silLen = sil.length;
+                for(var i = 0; i<silLen;i++)
+                {
+                    if(sil[i] != this){
+                        arr.push(sil[i]);
+                    }
+                }
+            });
+            if(!prop){
+                return $(arr);
+            }
+            else{
+                var $Prop = $(prop);
+                var newArr = [];
+                for(var i = 0;i<$Prop.length;i++){     //each方法也行
+                    for(var j = 0;j<arr.length;j++)
+                    {
+                        if($Prop[i] == arr[j]){
+                            newArr.push(arr[j]);
+                            break;
+                        }
+                    }
+                }
+                return $(newArr);
+            }
+        }
 
 
 
